@@ -31,11 +31,16 @@ const TransitionLayout = ({
   let refTarget = useRef();
   const refMode = useRef(mode);
   const initialSpring = useMemo(
-    () => ({ x: 0, y: 0, scale: 1, transformOrigin: "center center" }),
-    []
+    () => ({
+      x: 0,
+      y: 0,
+      scale: 1,
+      transformOrigin: "center center",
+      opacity: mode === "go" ? 1 : 0,
+    }),
+    [mode]
   );
   const [springProps, setSpring] = useSpring(() => initialSpring, []);
-  console.log(mode);
 
   useEffect(() => {
     refMode.current = mode;
@@ -84,28 +89,36 @@ const TransitionLayout = ({
   const onSpringStart = useCallback(() => {
     disableBodyScroll();
     refTarget.current.style.opacity = "0";
+
     handleIsTransitionStart && handleIsTransitionStart();
   }, []);
 
   const onSpringDone = useCallback(() => {
     enableBodyScroll();
-    refTarget.current.style.opacity = "1";
+    if (refMode.current === "go") {
+      refTarget.current.style.opacity = "1";
+      ref.current.style.opacity = "0";
+    }
 
     handleIsTransitionOver && handleIsTransitionOver();
   }, [handleIsTransitionOver]);
 
   useEffect(() => {
     if (isTrigger) {
-      console.log(refMode.current);
       const positions = getPositions();
       const fromTo =
         refMode.current === "go"
           ? { from: initialSpring, to: positions }
           : { from: positions, to: initialSpring };
 
-      fromTo.from.transformOrigin = `${positions.x < 0 ? "left" : "right"} ${
-        positions.y < 0 ? "top" : "bottom"
-      }`;
+      fromTo.from = {
+        ...fromTo.from,
+        opacity: 1,
+        transformOrigin: `${positions.x < 0 ? "left" : "right"} ${
+          positions.y < 0 ? "top" : "bottom"
+        }`,
+      };
+      fromTo.to = { ...fromTo.to, opacity: 1 };
 
       setSpring({
         reset: true,
@@ -115,7 +128,7 @@ const TransitionLayout = ({
       });
     }
     return () => {};
-  }, [isTrigger, getPositions]);
+  }, [isTrigger, getPositions, initialSpring]);
 
   return useTransitionLayoutDivContainer ? (
     <a.div
