@@ -1,7 +1,9 @@
 .TransitionLayout {
   position: absolute;
-  bottom: 0;
-  right: 0;
+  // bottom: 0;
+  // right: 0;
+  left: 50%;
+  top: 50%;
 }
 
 .img {
@@ -12,4 +14,15 @@
 .img__target {
   width: 20vmin;
   height: auto;
+  position: absolute;
+  top: 30vmin;
+  left: 20vmin;
+  transform: scale(3);
+
+  // bottom: 10vmin;
+  // right: 10vmin;
+  // transform: scale(0.5);
+
+  // border: 2px solid red;
+  opacity: 0.5;
 }

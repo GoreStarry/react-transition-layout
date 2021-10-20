@@ -31,19 +31,18 @@ const Template = (args) => {
     setIsTrigger((prev) => (!prev ? true : false));
   }, []);
 
-  const handleIsTriggerDone = useCallback(() => {
+  const handleIsTransitionStart = useCallback(() => {
     setIsTrigger(false);
   }, []);
 
   return (
     <>
       <TransitionLayout
-        mode="go"
-        test2="123"
+        mode="from"
         target={refTarget}
         isTrigger={isTrigger}
         className={sty.TransitionLayout}
-        handleIsTriggerDone={handleIsTriggerDone}
+        handleIsTransitionStart={handleIsTransitionStart}
         {...args}
       >
         <TestComp className={sty.img} />

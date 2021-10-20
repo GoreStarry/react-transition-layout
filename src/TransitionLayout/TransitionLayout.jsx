@@ -35,7 +35,7 @@ const TransitionLayout = ({
       x: 0,
       y: 0,
       scale: 1,
-      transformOrigin: "center center",
+      transformOrigin: "left top",
       opacity: mode === "go" ? 1 : 0,
     }),
     [mode]
@@ -53,10 +53,12 @@ const TransitionLayout = ({
   );
 
   useEffect(() => {
-    if (typeof target === "string") {
-      refTarget.current = document.getElementById(target);
-    } else {
-      refTarget = target;
+    if (target) {
+      if (typeof target === "string") {
+        refTarget.current = document.getElementById(target);
+      } else {
+        refTarget = target;
+      }
     }
 
     return () => {
@@ -65,24 +67,25 @@ const TransitionLayout = ({
   }, [target]);
 
   const getPositions = useCallback(() => {
+    // console.log(refTarget.current);
     const {
-      width: fWidth,
-      height: fHeight,
-      left: fLeft,
-      top: fTop,
+      width: targetWidth,
+      height: targetHeight,
+      left: targetLeft,
+      top: targetTop,
     } = refTarget.current.getBoundingClientRect();
 
     const {
-      width: tWidth,
-      height: tHeight,
-      left: tLeft,
-      top: tTop,
+      width: selfWidth,
+      height: selfHeight,
+      left: selfLeft,
+      top: selfTop,
     } = ref.current.getBoundingClientRect();
 
     return {
-      x: fLeft - tLeft,
-      y: fTop - tTop,
-      scale: fWidth / tWidth,
+      x: targetLeft - selfLeft,
+      y: targetTop - selfTop,
+      scale: targetWidth / selfWidth,
     };
   }, []);
 
@@ -106,6 +109,9 @@ const TransitionLayout = ({
   useEffect(() => {
     if (isTrigger) {
       const positions = getPositions();
+
+      // console.log(positions);
+
       const fromTo =
         refMode.current === "go"
           ? { from: initialSpring, to: positions }
@@ -114,11 +120,12 @@ const TransitionLayout = ({
       fromTo.from = {
         ...fromTo.from,
         opacity: 1,
-        transformOrigin: `${positions.x < 0 ? "left" : "right"} ${
-          positions.y < 0 ? "top" : "bottom"
-        }`,
       };
-      fromTo.to = { ...fromTo.to, opacity: 1 };
+
+      fromTo.to = {
+        ...fromTo.to,
+        opacity: 1,
+      };
 
       setSpring({
         reset: true,
@@ -128,7 +135,7 @@ const TransitionLayout = ({
       });
     }
     return () => {};
-  }, [isTrigger, getPositions, initialSpring]);
+  }, [isTrigger, initialSpring]);
 
   return useTransitionLayoutDivContainer ? (
     <a.div
@@ -150,7 +157,7 @@ TransitionLayout.propTypes = {
   useTransitionLayoutDivContainer: PropTypes.bool,
   target: PropTypes.oneOfType([PropTypes.array, PropTypes.object]).isRequired,
   handleIsTransitionStart: PropTypes.func,
-  handleIsTriggerDone: PropTypes.func,
+  handleIsTransitionOver: PropTypes.func,
 };
 
 export default TransitionLayout;
