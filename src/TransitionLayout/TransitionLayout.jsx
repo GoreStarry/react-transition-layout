@@ -6,7 +6,7 @@ import React, {
   useEffect,
 } from "react";
 import PropTypes from "prop-types";
-import { a, useSpring, useSprings } from "react-spring";
+import { a, useSpring } from "react-spring";
 import {
   disableBodyScroll,
   enableBodyScroll,
@@ -26,6 +26,7 @@ const TransitionLayout = ({
   className,
   children,
   Component,
+  reactSpringConfig,
 }) => {
   const ref = useRef();
   let refTarget = useRef();
@@ -132,6 +133,7 @@ const TransitionLayout = ({
         onStart: onSpringStart,
         onRest: onSpringDone,
         ...fromTo,
+        config: reactSpringConfig,
       });
     }
     return () => {};
